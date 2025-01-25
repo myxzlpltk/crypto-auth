@@ -91,7 +91,6 @@ export default function LoginPage() {
     try {
       switch (auth?.type) {
         case "evm":
-          console.log(web3Instance);
           web3Instance?.eth?.currentProvider?.disconnect();
           break;
         case "solflare":
