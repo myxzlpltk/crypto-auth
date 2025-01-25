@@ -8,7 +8,7 @@ type NonceResponse = {
   nonce: string;
 };
 
-export async function getNonce(address: string): Promise<NonceResponse> {
+export async function getEVMNonce(address: string): Promise<NonceResponse> {
   // Get user from database
   const user = await User.findOne({ where: { address } });
   // If user exists, return nonce
@@ -19,7 +19,7 @@ export async function getNonce(address: string): Promise<NonceResponse> {
   return { nonce };
 }
 
-export async function verifySignature(
+export async function verifyEVMSignature(
   address: string,
   signature: string
 ): Promise<boolean> {

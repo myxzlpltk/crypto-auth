@@ -10,16 +10,21 @@
   },
   "dependencies": {
     "@metamask/eth-sig-util": "^8.1.2",
+    "@solana/web3.js": "^1.98.0",
+    "@solflare-wallet/sdk": "^1.4.2",
+    "base58": "^2.0.1",
     "next": "15.1.6",
     "pg-hstore": "^2.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7",
+    "tweetnacl": "^1.0.3",
     "web3": "^4.16.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/bs58": "^4.0.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
