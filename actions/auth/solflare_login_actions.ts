@@ -38,16 +38,4 @@ export async function verifySolflareSignature(
   // Reset nonce
   await user.update({ nonce: crypto.randomUUID() });
   return true;
-
-  //   // Verify signature
-  //   const recoveredAddress = recoverPersonalSignature({
-  //     data: user.nonce,
-  //     signature: signature,
-  //   });
-  //   // Compare addresses
-  //   const valid = recoveredAddress === address;
-  //   if (!valid) return false;
-  //   // Reset nonce
-  //   await user.update({ nonce: crypto.randomUUID() });
-  //   return true;
 }
