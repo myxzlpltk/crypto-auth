@@ -88,12 +88,17 @@ export default function LoginPage() {
 
   const onLogout = () => {
     // Disconnect based on auth type
-    switch (auth?.type) {
-      case "evm":
-        web3Instance?.currentProvider?.disconnect();
-        break;
-      case "solflare":
-        solflareInstance.disconnect();
+    try {
+      switch (auth?.type) {
+        case "evm":
+          console.log(web3Instance);
+          web3Instance?.eth?.currentProvider?.disconnect();
+          break;
+        case "solflare":
+          solflareInstance.disconnect();
+      }
+    } catch (error) {
+      console.error(error);
     }
     // Reset auth state
     setAuth(null);
