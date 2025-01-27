@@ -20,7 +20,8 @@ type Auth = {
 
 export default function LoginPage() {
   const [auth, setAuth] = useState<Auth | null>(null);
-  const [isEthereumSupported, setIsEthereumSupported] = useState(false);
+  const [isBrowserWalletSupported, setIsBrowserWalletSupported] =
+    useState(false);
 
   // Window and web3 instance
   const [currentWindow, setCurrentWindow] = useState<Window | null>();
@@ -32,14 +33,15 @@ export default function LoginPage() {
 
   useEffect(() => {
     setCurrentWindow(window);
-    setIsEthereumSupported(!!window.ethereum);
+    setIsBrowserWalletSupported(!!window.ethereum);
   }, []);
 
-  const onLoginWithMetamask = async () => {
+  const onLoginWithBrowserWallet = async () => {
     try {
       // Skip if ethereum is not supported
       if (!web3Instance) throw new Error("Web3 instance not found");
-      if (!isEthereumSupported) throw new Error("Ethereum is not supported");
+      if (!isBrowserWalletSupported)
+        throw new Error("Ethereum is not supported");
       // Create web3 instance and request accounts
       const accounts = await web3Instance.eth.requestAccounts();
       if (accounts.length === 0) throw new Error("No accounts found");
@@ -107,9 +109,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center container">
       {!auth && (
         <div className="flex flex-col gap-2 max-w-lg">
-          {isEthereumSupported && (
-            <button className="btn btn-neutral" onClick={onLoginWithMetamask}>
-              Login With Metamask/Phantom
+          {isBrowserWalletSupported && (
+            <button
+              className="btn btn-neutral"
+              onClick={onLoginWithBrowserWallet}
+            >
+              Login With Browser Wallet
             </button>
           )}
           <button className="btn btn-neutral" onClick={onLoginSolflare}>
