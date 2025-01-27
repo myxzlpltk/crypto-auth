@@ -9,9 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ethersproject/providers": "^5.7.2",
     "@metamask/eth-sig-util": "^8.1.2",
     "@solana/web3.js": "^1.98.0",
     "@solflare-wallet/sdk": "^1.4.2",
+    "@web3-onboard/core": "^2.24.0",
+    "@web3-onboard/injected-wallets": "^2.11.3",
+    "@web3-onboard/transaction-preview": "^2.1.2",
     "base58": "^2.0.1",
     "next": "15.1.6",
     "pg-hstore": "^2.3.4",

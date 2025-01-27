@@ -8,14 +8,18 @@ import {
   getSolflareNonce,
   verifySolflareSignature,
 } from "@/actions/auth/solflare_login_actions";
+import { ETH_MAINNET_RPC } from "@/core/consts";
 import Solflare from "@solflare-wallet/sdk";
+import Onboard from "@web3-onboard/core";
+import injectedModule from "@web3-onboard/injected-wallets";
 import base58 from "bs58";
+import { Web3Provider } from "@ethersproject/providers";
 import { useEffect, useMemo, useState } from "react";
 import Web3 from "web3";
 
 type Auth = {
   address: string;
-  type: "evm" | "solflare";
+  type: "evm" | "solflare" | "onboard";
 };
 
 export default function LoginPage() {
@@ -30,6 +34,24 @@ export default function LoginPage() {
     [currentWindow]
   );
   const solflareInstance = useMemo(() => new Solflare(), []);
+
+  // Web3 Onboard
+  const injected = useMemo(() => injectedModule(), []);
+  const onboard = useMemo(
+    () =>
+      Onboard({
+        wallets: [injected],
+        chains: [
+          {
+            id: "0x1",
+            token: "ETH",
+            label: "Ethereum Mainnet",
+            rpcUrl: ETH_MAINNET_RPC,
+          },
+        ],
+      }),
+    [injected]
+  );
 
   useEffect(() => {
     setCurrentWindow(window);
@@ -88,6 +110,31 @@ export default function LoginPage() {
     }
   };
 
+  const onLoginWithWeb3Onboard = async () => {
+    try {
+      // Connect wallet
+      const wallets = await onboard.connectWallet();
+      if (wallets.length === 0) throw new Error("No wallet found");
+      // Get address
+      const wallet = wallets[0];
+      const address = wallet.accounts[0].address;
+      if (!address) throw new Error("No address found");
+      // Get nonce from server
+      const { nonce } = await getEVMNonce(address);
+      // Sign nonce with wallet
+      const ethersProvider = new Web3Provider(wallet.provider, "any");
+      const signer = ethersProvider.getSigner();
+      const signature = await signer.signMessage(nonce);
+      // Send signature to server
+      const verified = await verifyEVMSignature(address, signature);
+      if (!verified) throw new Error("Signature verification failed");
+      // Set auth state
+      setAuth({ address, type: "onboard" });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const onLogout = () => {
     // Disconnect based on auth type
     try {
@@ -97,6 +144,13 @@ export default function LoginPage() {
           break;
         case "solflare":
           solflareInstance.disconnect();
+          break;
+        case "onboard":
+          const wallets = onboard.state.get().wallets;
+          for (const wallet of wallets) {
+            onboard.disconnectWallet({ label: wallet.label });
+          }
+          break;
       }
     } catch (error) {
       console.error(error);
@@ -119,6 +173,9 @@ export default function LoginPage() {
           )}
           <button className="btn btn-neutral" onClick={onLoginSolflare}>
             Login With Solflare
+          </button>
+          <button className="btn btn-neutral" onClick={onLoginWithWeb3Onboard}>
+            Login With Web3-Onboard
           </button>
         </div>
       )}
